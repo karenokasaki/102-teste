@@ -5,26 +5,33 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./styles/style.css" />
-    <title>Jogo da Memória</title>
+
+    <title>Memory Game</title>
   </head>
   <body>
-    <div id="home">
-      <h1>Jogo da Memória</h1>
+    <div id="homeScreen">
+      <h1>Memory game</h1>
 
-      <div>
-        <label>Escreva seu nome</label>
-        <input type="text" id="inputName" />
-      </div>
+      <p>Seja vem bindo. Você precisa achar as imagens iguais.</p>
 
-      <button id="startButton">Começar!</button>
+      <button id="buttonStart">Jogar!</button>
     </div>
 
     <div id="gameScreen" class="hide">
-      <div>
-        <h2 id="name"></h2>
-        <h2 id="score"></h2>
-      </div>
+      <h1>Lives: <span id="livesSpan"></span></h1>
+
       <div id="board"></div>
+
+      <div class="hide" id="winScreen">
+        <h1>Parabéns você ganhou! 💖👏👏👏👏</h1>
+      </div>
+
+      <div class="hide" id="loseScreen">
+        <h1>Buabuabua, você perdeu.</h1>
+        <form>
+          <button>Jogar novamente</button>
+        </form>
+      </div>
     </div>
 
     <script src="./js/index.js"></script>

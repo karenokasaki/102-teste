@@ -1,13 +1,13 @@
-// capturar
-const startButton = document.querySelector("#startButton");
-const home = document.querySelector("#home");
-const inputName = document.querySelector("#inputName");
-const gameScreen = document.querySelector("#gameScreen");
+//capturar os elementos de html
+const homeScreen = document.querySelector("#homeScreen");
+const buttonStart = document.querySelector("#buttonStart");
+const gameScrren = document.querySelector("#gameScreen");
 const board = document.querySelector("#board");
-const name = document.querySelector("#name");
-const score = document.querySelector("#score");
+const winScreen = document.querySelector("#winScreen");
+const loseScreen = document.querySelector("#loseScreen");
+const livesSpan = document.querySelector("#livesSpan");
 
-// imagens
+// variáveis
 const deck = [
   "./images/harmonia.svg",
   "./images/poder.svg",
@@ -18,17 +18,20 @@ const deck = [
   "./images/projetar.svg",
   "./images/refletir.svg",
 ];
+let selectedCards = [];
+let lives = 2;
 
-// variaveis
-let playerName = "";
-let selectCards = [];
-let lifes = 4;
+buttonStart.addEventListener("click", () => {
+  // o que é para acontecer quando eu clicar no botão jogar?
 
-//eventos
-startButton.addEventListener("click", () => {
-  playerName = inputName.value;
-  home.classList.add("hide");
-  gameScreen.classList.remove("hide");
+  // esconder a minha homeScreen
+  // como? -> adicionando a classe hide
+  homeScreen.classList.add("hide");
+
+  // mostrar a gameScreen
+  // como? -> removendo a classe hide da div
+  gameScrren.classList.remove("hide");
+
   startGame();
 });
 
@@ -36,86 +39,93 @@ function startGame() {
   // embaralhar as cartas
   deck.sort(() => Math.random() - 0.5);
 
-  // criar as cartas
+  //adicionar as vidas
+  livesSpan.innerText = lives;
+
+  // criar as tags <img /> com o src das imagens
   createCards();
-  score.innerText = lifes;
-  name.innerText = playerName;
 
-  // adicionar evento de click
-  const cards = document.querySelectorAll(".back");
-  cards.forEach((card) => {
+  // adicionar um eventListener em todas as cartas que tem a classe "back"
+  const cardsBack = document.querySelectorAll(".back");
+  cardsBack.forEach((card) => {
     card.addEventListener("click", () => {
-      card.classList.remove("show");
+      if (selectedCards.length === 2) {
+        return;
+      }
+      //escondendo a card back
       card.classList.add("hide");
+      //mostrei a carta de trás
       card.previousElementSibling.classList.remove("hide");
-      card.previousElementSibling.classList.add("show");
+      // adicionar a carta clicada a minha array de selecionadas
+      selectedCards.push(card.previousElementSibling);
 
-      //adicionar a carta a array
-      selectCards.push(card.previousElementSibling);
+      checkPair();
 
-      checkCards();
-
-      checkStatus();
+      checkStatusGame();
     });
   });
 }
 
 function createCards() {
   deck.forEach((card) => {
-    const imgFront = document.createElement("img");
-    imgFront.setAttribute("src", card);
-    imgFront.classList.add("front");
-    imgFront.classList.add("hide");
+    const imgTag = document.createElement("img"); // <img />
+    imgTag.setAttribute("src", card); // <img src="./images/harmonia.svg" />
+    imgTag.classList.add("hide"); // <img src="./images/harmonia.svg" class="hide" />
+    board.appendChild(imgTag);
 
     const imgBack = document.createElement("img");
     imgBack.setAttribute("src", "./images/back.svg");
     imgBack.classList.add("back");
-    imgBack.classList.add("show");
-
-    board.appendChild(imgFront);
     board.appendChild(imgBack);
   });
 }
 
-function checkCards() {
-  if (selectCards.length === 2) {
-    console.log(selectCards);
-    //checar se são iguais
-    if (selectCards[0].src === selectCards[1].src) {
-      console.log("são iguais");
-      selectCards[0].classList.add("turn");
-      selectCards[1].classList.add("turn");
-      selectCards = [];
-      return;
-    }
+function checkPair() {
+  if (selectedCards.length !== 2) {
+    return;
+  }
 
-    if (selectCards[0].src !== selectCards[1].src) {
-      console.log("são diferentes");
-      lifes--;
-      score.innerText = lifes;
-      setTimeout(() => {
-        selectCards.forEach((card) => {
-          card.classList.remove("show");
-          card.classList.add("hide");
+  if (selectedCards[0].src === selectedCards[1].src) {
+    console.log("as cartas são iguais");
+    selectedCards[0].classList.add("turn")
+    selectedCards[1].classList.add("turn")
 
-          card.nextElementSibling.classList.remove("hide");
-          card.nextElementSibling.classList.add("show");
-        });
-        selectCards = [];
-        return;
-      }, 1000);
-    }
+    selectedCards = [];
+    return;
+  }
+
+  if (selectedCards[0].src !== selectedCards[1].src) {
+    console.log("as cartas são diferentes");
+    lives--;
+    livesSpan.innerText = lives;
+    //adicionar a classe hide para elas
+    setTimeout(() => {
+      selectedCards[0].classList.add("hide");
+      selectedCards[1].classList.add("hide");
+
+      selectedCards[0].nextElementSibling.classList.remove("hide");
+      selectedCards[1].nextElementSibling.classList.remove("hide");
+
+      selectedCards = [];
+    }, 1200);
   }
 }
 
-function checkStatus() {
-  const allCardsTurn = document.querySelectorAll(".turn");
-  
-  if (allCardsTurn.length === deck.length) {
-    alert("Você venceu!");
+function checkStatusGame() {
+    //checando para saber se perdeu
+  if (lives === 0) {
+    loseScreen.classList.remove("hide");
+    board.classList.add("hide");
   }
 
-  if (lifes === 0) {
-    alert("Você perdeu!");
+  //checando para saber se ganhou
+  const cardsTurn = document.querySelectorAll(".turn")
+  if (cardsTurn.length === deck.length) {
+    winScreen.classList.remove("hide")
+    setTimeout(() => {
+        location.reload()
+    },1000)
   }
+
+
 }
